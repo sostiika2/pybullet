@@ -1,0 +1,24 @@
+[0.589s] Invoking command in '/home/sostika/my_py/src/turtlebot3_sim': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sostika/my_py/build/turtlebot3_sim/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_sim build --build-base /home/sostika/my_py/build/turtlebot3_sim/build install --record /home/sostika/my_py/build/turtlebot3_sim/install.log --single-version-externally-managed install_data
+[0.785s] running egg_info
+[0.799s] writing ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/PKG-INFO
+[0.799s] writing dependency_links to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/dependency_links.txt
+[0.799s] writing entry points to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/entry_points.txt
+[0.799s] writing requirements to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/requires.txt
+[0.799s] writing top-level names to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/top_level.txt
+[0.829s] reading manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+[0.829s] writing manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+[0.829s] running build
+[0.830s] running build_py
+[0.830s] copying turtlebot3_sim/sim_node.py -> /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim
+[0.830s] running install
+[0.834s] running install_lib
+[0.848s] copying /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim/sim_node.py -> /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim
+[0.848s] byte-compiling /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim/sim_node.py to sim_node.cpython-312.pyc
+[0.849s] running install_data
+[0.849s] running install_egg_info
+[0.864s] removing '/home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim-0.0.0-py3.12.egg-info' (and everything under it)
+[0.864s] Copying ../../build/turtlebot3_sim/turtlebot3_sim.egg-info to /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim-0.0.0-py3.12.egg-info
+[0.865s] running install_scripts
+[0.972s] Installing sim_node script to /home/sostika/my_py/install/turtlebot3_sim/lib/turtlebot3_sim
+[0.972s] writing list of installed files to '/home/sostika/my_py/build/turtlebot3_sim/install.log'
+[0.993s] Invoked command in '/home/sostika/my_py/src/turtlebot3_sim' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sostika/my_py/build/turtlebot3_sim/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_sim build --build-base /home/sostika/my_py/build/turtlebot3_sim/build install --record /home/sostika/my_py/build/turtlebot3_sim/install.log --single-version-externally-managed install_data

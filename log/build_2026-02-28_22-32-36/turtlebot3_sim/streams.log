@@ -1,0 +1,17 @@
+[0.524s] Invoking command in '/home/sostika/my_py/src/turtlebot3_sim': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sostika/my_py/build/turtlebot3_sim/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_sim build --build-base /home/sostika/my_py/build/turtlebot3_sim/build install --record /home/sostika/my_py/build/turtlebot3_sim/install.log --single-version-externally-managed install_data
+[0.692s] running egg_info
+[0.703s] writing ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/PKG-INFO
+[0.703s] writing dependency_links to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/dependency_links.txt
+[0.703s] writing entry points to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/entry_points.txt
+[0.703s] writing requirements to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/requires.txt
+[0.703s] writing top-level names to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/top_level.txt
+[0.728s] reading manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+[0.728s] writing manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+[0.728s] running build
+[0.728s] running build_py
+[0.728s] running install
+[0.733s] running install_lib
+[0.745s] running install_data
+[0.745s] creating /home/sostika/my_py/install/turtlebot3_sim/share/turtlebot3_sim/launch
+[0.745s] error: can't copy 'launch/sim_launch.py': doesn't exist or not a regular file
+[0.758s] Invoked command in '/home/sostika/my_py/src/turtlebot3_sim' returned '1': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/sostika/my_py/build/turtlebot3_sim/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/turtlebot3_sim build --build-base /home/sostika/my_py/build/turtlebot3_sim/build install --record /home/sostika/my_py/build/turtlebot3_sim/install.log --single-version-externally-managed install_data

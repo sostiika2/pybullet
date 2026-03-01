@@ -1,0 +1,38 @@
+running egg_info
+creating ../../build/turtlebot3_sim/turtlebot3_sim.egg-info
+writing ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/PKG-INFO
+writing dependency_links to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/dependency_links.txt
+writing entry points to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/entry_points.txt
+writing requirements to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/requires.txt
+writing top-level names to ../../build/turtlebot3_sim/turtlebot3_sim.egg-info/top_level.txt
+writing manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+reading manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+writing manifest file '../../build/turtlebot3_sim/turtlebot3_sim.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/sostika/my_py/build/turtlebot3_sim/build
+creating /home/sostika/my_py/build/turtlebot3_sim/build/lib
+creating /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim
+copying turtlebot3_sim/sim_node.py -> /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim
+copying turtlebot3_sim/pybullet_world.py -> /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim
+copying turtlebot3_sim/__init__.py -> /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim
+running install
+running install_lib
+creating /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim
+copying /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim/sim_node.py -> /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim
+copying /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim/pybullet_world.py -> /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim
+copying /home/sostika/my_py/build/turtlebot3_sim/build/lib/turtlebot3_sim/__init__.py -> /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim
+byte-compiling /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim/sim_node.py to sim_node.cpython-312.pyc
+byte-compiling /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim/pybullet_world.py to pybullet_world.cpython-312.pyc
+byte-compiling /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/sostika/my_py/install/turtlebot3_sim/share/ament_index
+creating /home/sostika/my_py/install/turtlebot3_sim/share/ament_index/resource_index
+creating /home/sostika/my_py/install/turtlebot3_sim/share/ament_index/resource_index/packages
+copying resource/turtlebot3_sim -> /home/sostika/my_py/install/turtlebot3_sim/share/ament_index/resource_index/packages
+copying package.xml -> /home/sostika/my_py/install/turtlebot3_sim/share/turtlebot3_sim
+running install_egg_info
+Copying ../../build/turtlebot3_sim/turtlebot3_sim.egg-info to /home/sostika/my_py/install/turtlebot3_sim/lib/python3.12/site-packages/turtlebot3_sim-0.0.0-py3.12.egg-info
+running install_scripts
+Installing sim_node script to /home/sostika/my_py/install/turtlebot3_sim/lib/turtlebot3_sim
+writing list of installed files to '/home/sostika/my_py/build/turtlebot3_sim/install.log'
