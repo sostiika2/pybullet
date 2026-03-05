@@ -1,0 +1,10 @@
+/build
+/install
+/log
+/opt
+/_pycache_
+*.pyc
+*.pyo
+*.pyd
+*.log
+\myenv

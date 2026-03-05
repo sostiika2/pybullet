@@ -7,6 +7,8 @@ from .pybullet_world import create_world
 from sensor_msgs.msg import LaserScan
 import numpy as np
 from std_srvs.srv import Trigger
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Quaternion
 
 class TurtleBotSim(Node):
     def __init__(self):
@@ -22,6 +24,9 @@ class TurtleBotSim(Node):
         
         #Lidar publisher
         self.pub_scan = self.create_publisher(LaserScan, 'scan', 10)
+
+        # Odometry publisher
+        self.pub_odom = self.create_publisher(Odometry, 'odom', 10)
 
         # --- Service ---
         self.srv_reset = self.create_service(Trigger, 'reset_robot', self.reset_robot_callback)
@@ -52,6 +57,7 @@ class TurtleBotSim(Node):
         p.setJointMotorControl2(self.robotId, 2, p.VELOCITY_CONTROL, targetVelocity=wheel_velocity[1])
         #scan
         self.publish_lidar_scan()
+        self.publish_odometry()
         p.stepSimulation()
         time.sleep(1/240)
         # if time.time() - self.last_cmd_time > 3:  # 0.2 sec timeout
@@ -114,6 +120,41 @@ class TurtleBotSim(Node):
         response.message = "Robot has been reset."
         self.get_logger().info("Robot reset to start position")
         return response
+
+    #for odometry
+    def publish_odometry(self):
+
+        pos, orn = p.getBasePositionAndOrientation(self.robotId)
+        lin_vel, ang_vel = p.getBaseVelocity(self.robotId)
+
+        odom = Odometry()
+
+        odom.header.stamp = self.get_clock().now().to_msg()
+        odom.header.frame_id = "odom"
+        odom.child_frame_id = "base_link"
+
+        # Position
+        odom.pose.pose.position.x = pos[0]
+        odom.pose.pose.position.y = pos[1]
+        odom.pose.pose.position.z = pos[2]
+
+        # Orientation
+        odom.pose.pose.orientation.x = orn[0]
+        odom.pose.pose.orientation.y = orn[1]
+        odom.pose.pose.orientation.z = orn[2]
+        odom.pose.pose.orientation.w = orn[3]
+
+        # Linear velocity
+        odom.twist.twist.linear.x = lin_vel[0]
+        odom.twist.twist.linear.y = lin_vel[1]
+        odom.twist.twist.linear.z = lin_vel[2]
+
+        # Angular velocity
+        odom.twist.twist.angular.x = ang_vel[0]
+        odom.twist.twist.angular.y = ang_vel[1]
+        odom.twist.twist.angular.z = ang_vel[2]
+
+        self.pub_odom.publish(odom)
 
 
 def main(args=None):

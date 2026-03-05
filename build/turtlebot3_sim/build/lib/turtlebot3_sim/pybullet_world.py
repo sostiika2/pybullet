@@ -105,7 +105,7 @@ def create_world():
     add_obstacle([-2,-2,0], "table/table.urdf", scale=0.5)
 
     # Robot
-    startPos = [-4, 0, 0.05]
+    startPos = [-4, 0, 0.001]
     startOrientation = p.getQuaternionFromEuler([0,0,0])
     robotId = p.loadURDF("/home/sostika/catkin_ws/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.urdf",
                          startPos, startOrientation)
