@@ -101,8 +101,8 @@ def create_world():
     create_wall([0,-5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
 
     # Example obstacles
-    add_obstacle([2,2,0], "table/table.urdf", scale=0.5)
-    add_obstacle([-2,-2,0], "table/table.urdf", scale=0.5)
+    # add_obstacle([2,2,0], "table/table.urdf", scale=0.5)
+    # add_obstacle([-2,-2,0], "table/table.urdf", scale=0.5)
 
     # Robot
     startPos = [-4, 0, 0.001]

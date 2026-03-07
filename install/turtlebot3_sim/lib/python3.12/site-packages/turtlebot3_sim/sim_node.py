@@ -39,7 +39,7 @@ class TurtleBotSim(Node):
 
         # Timer for simulation step
         self.timer = self.create_timer(1/240, self.step_sim)
-          # Default start position and orientation
+        #   # Default start position and orientation
         self.startPos = [-4, 0, 0.05]
         self.startOrientation = p.getQuaternionFromEuler([0, 0, 0])
 

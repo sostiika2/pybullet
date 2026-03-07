@@ -16,3 +16,5 @@ test/test_pep257.py
 turtlebot3_sim/__init__.py
 turtlebot3_sim/pybullet_world.py
 turtlebot3_sim/sim_node.py
+turtlebot3_sim/test_env.py
+turtlebot3_sim/turtlebot_env.py
