@@ -109,6 +109,47 @@ class TurtleBotEnv(gym.Env):
         rclpy.spin_once(self.node, timeout_sec=0.1)
         print(f"Robot stopped at ({self.x:.2f}, {self.y:.2f})")
 
+    # def calculate_reward(self, obs, linear, angular):
+
+    #     distance = obs[3]
+
+    #     # Progress reward
+    #     if self.prev_distance is None:
+    #         progress = 0.0
+    #     else:
+    #         progress = self.prev_distance - distance
+
+    #     self.prev_distance = distance
+    #     reward_progress = 5.0 * progress
+
+
+    #     # Heading reward
+    #     angle_to_goal = np.arctan2(self.goal[1] - self.y, self.goal[0] - self.x)
+    #     heading_error = np.arctan2(
+    #         np.sin(angle_to_goal - self.yaw),
+    #         np.cos(angle_to_goal - self.yaw)
+    #     )
+
+    #     reward_heading = 0.3 * np.cos(heading_error)
+
+
+    #     # Encourage forward motion
+    #     reward_forward = 0.1 * linear
+
+
+    #     # Penalize excessive turning
+    #     reward_turn = -0.03 * abs(angular)
+
+
+    #     reward = reward_progress + reward_heading + reward_forward + reward_turn
+
+
+    #     # Goal reward
+    #     if distance < self.goal_tolerance:
+    #         reward = 100.0
+
+    #     return reward
+
     def calculate_reward(self, obs, linear, angular):
 
         distance = obs[3]
@@ -120,35 +161,17 @@ class TurtleBotEnv(gym.Env):
             progress = self.prev_distance - distance
 
         self.prev_distance = distance
-        reward_progress = 5.0 * progress
 
+        reward = 10.0 * progress
+        # Small penalty for spinning
+        reward -= 0.01 * abs(angular)
 
-        # Heading reward
-        angle_to_goal = np.arctan2(self.goal[1] - self.y, self.goal[0] - self.x)
-        heading_error = np.arctan2(
-            np.sin(angle_to_goal - self.yaw),
-            np.cos(angle_to_goal - self.yaw)
-        )
-
-        reward_heading = 0.3 * np.cos(heading_error)
-
-
-        # Encourage forward motion
-        reward_forward = 0.1 * linear
-
-
-        # Penalize excessive turning
-        reward_turn = -0.03 * abs(angular)
-
-
-        reward = reward_progress + reward_heading + reward_forward + reward_turn
-
-
+        # Small penalty to encourage shorter paths
+        reward -= 0.001
         # Goal reward
         if distance < self.goal_tolerance:
             reward = 100.0
-
-        return reward
+        return float(reward)
     
 
     # Step function
