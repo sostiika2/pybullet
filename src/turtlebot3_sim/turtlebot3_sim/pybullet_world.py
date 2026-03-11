@@ -95,19 +95,21 @@ def create_world():
     p.loadURDF("plane.urdf")
 
     # Example walls (you can add more)
-    create_wall([5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
-    create_wall([-5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
-    create_wall([0,5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
-    create_wall([0,-5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
+    # create_wall([5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
+    # create_wall([-5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
+    # create_wall([0,5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
+    # create_wall([0,-5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
 
     # Example obstacles
     # add_obstacle([2,2,0], "table/table.urdf", scale=0.5)
     # add_obstacle([-2,-2,0], "table/table.urdf", scale=0.5)
 
     # Robot
-    startPos = [-4, 0, 0.001]
+    startPos = [0, 0, 0.001]
     startOrientation = p.getQuaternionFromEuler([0,0,0])
     robotId = p.loadURDF("/home/sostika/catkin_ws/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.urdf",
                          startPos, startOrientation)
+    
+    
 
     return physicsClient, robotId
