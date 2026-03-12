@@ -1,2 +1,0 @@
-[console_scripts]
-sim_node = turtlebot3_sim.sim_node:main
