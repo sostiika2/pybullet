@@ -8,3 +8,6 @@
 *.pyd
 *.log
 \myenv
+*.csv
+*.zip
+\ppo_turtlebot_tensorboard

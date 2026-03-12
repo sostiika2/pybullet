@@ -17,10 +17,10 @@ model = PPO(
     "MlpPolicy",
     env,
     verbose=1,
-    learning_rate=3e-4,
+    learning_rate=1e-4,
     n_steps=2048,
     batch_size=64,
-    ent_coef=0.01,
+    ent_coef=0.005,
     gamma=0.99,
     clip_range=0.2,
     tensorboard_log="./ppo_turtlebot_tensorboard/"
@@ -30,13 +30,13 @@ model = PPO(
 # 3. Train
 # -------------------------------
 model.learn(
-    total_timesteps=200_000,
+    total_timesteps=700_000,
     tb_log_name="turtlebot_run"
 )
 
 # -------------------------------
 # 4. Save model
 # -------------------------------
-model.save("ppo_turtlebot5")
+model.save("ppo_turtlebot6")
 
 env.close()
