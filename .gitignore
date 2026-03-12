@@ -11,3 +11,4 @@
 *.csv
 *.zip
 \ppo_turtlebot_tensorboard
+src/training_log.csv
