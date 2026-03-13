@@ -2,6 +2,7 @@ import pybullet as p
 import pybullet_data
 import time
 import numpy as np
+import math
 
 # Connect to PyBullet
 physicsClient = p.connect(p.GUI)
@@ -57,8 +58,7 @@ def add_obstacle(pos, urdf_name, scale=1.0):
 # Robot start position
 # ----------------------------
 startPos = [1, 1, 0.05]
-startOrientation = p.getQuaternionFromEuler([0, 0, 0])
-
+startOrientation = p.getQuaternionFromEuler([0, 0, math.pi/2])  # yaw = 90°
 # Load TurtleBot3 Burger
 robotId = p.loadURDF("/home/sostika/catkin_ws/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.urdf",
                      startPos, startOrientation)

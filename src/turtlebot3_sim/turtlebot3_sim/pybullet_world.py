@@ -1,101 +1,116 @@
 import pybullet as p
 import pybullet_data
 
+import math
 # ---------- WALL ----------
-def create_wall(pos, size, color):
-    collision_shape = p.createCollisionShape(p.GEOM_BOX, halfExtents=size)
-    visual_shape = p.createVisualShape(p.GEOM_BOX, halfExtents=size, rgbaColor=color)
+def create_wall(pos, size, color=[0.85,0.85,0.85,1]):
+    collision = p.createCollisionShape(p.GEOM_BOX, halfExtents=size)
+    visual = p.createVisualShape(p.GEOM_BOX, halfExtents=size, rgbaColor=color)
 
     return p.createMultiBody(
         baseMass=0,
-        baseCollisionShapeIndex=collision_shape,
-        baseVisualShapeIndex=visual_shape,
+        baseCollisionShapeIndex=collision,
+        baseVisualShapeIndex=visual,
         basePosition=pos
     )
 
 
-# ---------- URDF OBSTACLE ----------
-def add_obstacle(pos, urdf_name, scale=1.0):
-    return p.loadURDF(urdf_name, basePosition=pos, globalScaling=scale)
-
-
-# ---------- SMALL BOX ----------
-def create_fixed_box(pos, size=0.1):
-    collision_shape = p.createCollisionShape(
+# ---------- BOX OBSTACLE ----------
+def create_box(pos, size=0.25):
+    collision = p.createCollisionShape(
         p.GEOM_BOX,
-        halfExtents=[size, size, size]
+        halfExtents=[size,size,size]
     )
 
-    visual_shape = p.createVisualShape(
+    visual = p.createVisualShape(
         p.GEOM_BOX,
-        halfExtents=[size, size, size],
-        rgbaColor=[0.6, 0.3, 0.1, 1]
+        halfExtents=[size,size,size],
+        rgbaColor=[0.6,0.4,0.2,1]
     )
 
     return p.createMultiBody(
         baseMass=0,
-        baseCollisionShapeIndex=collision_shape,
-        baseVisualShapeIndex=visual_shape,
-        basePosition=[pos[0], pos[1], size]
+        baseCollisionShapeIndex=collision,
+        baseVisualShapeIndex=visual,
+        basePosition=[pos[0],pos[1],size]
     )
 
 
 # ---------- PILLAR ----------
-def create_pillar(pos, radius=0.15, height=1.0, color=[0.4,0.4,0.4,1]):
-    collision_shape = p.createCollisionShape(
+def create_pillar(pos, radius=0.2, height=1.0):
+    collision = p.createCollisionShape(
         p.GEOM_CYLINDER,
         radius=radius,
         height=height
     )
 
-    visual_shape = p.createVisualShape(
+    visual = p.createVisualShape(
         p.GEOM_CYLINDER,
         radius=radius,
         length=height,
-        rgbaColor=color
+        rgbaColor=[0.4,0.4,0.4,1]
     )
 
     return p.createMultiBody(
         baseMass=0,
-        baseCollisionShapeIndex=collision_shape,
-        baseVisualShapeIndex=visual_shape,
-        basePosition=[pos[0], pos[1], height/2]
+        baseCollisionShapeIndex=collision,
+        baseVisualShapeIndex=visual,
+        basePosition=[pos[0],pos[1],height/2]
     )
 
 
-# ---------- WORLD ----------
+# ---------- VISUAL GOAL (NO COLLISION) ----------
+def create_goal_marker(pos):
+
+    visual = p.createVisualShape(
+        p.GEOM_CYLINDER,
+        radius=0.1,
+        length=0.02,
+        rgbaColor=[1,0,0,1]   # bright red
+    )
+
+    return p.createMultiBody(
+        baseMass=0,
+        baseCollisionShapeIndex=-1,   # IMPORTANT: no collision
+        baseVisualShapeIndex=visual,
+        basePosition=[pos[0],pos[1],0.01]
+    )
+
+
 def create_world():
 
     physicsClient = p.connect(p.GUI)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     p.setGravity(0, 0, -10)
 
-    # Plane
+    # ---------- FLOOR ----------
     planeId = p.loadURDF("plane.urdf")
 
-    # ---------- Boundary walls ----------
-    create_wall([5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
-    create_wall([-5,0,0.5], [0.2,5,0.5], [0.8,0.8,0.8,1])
-    create_wall([0,5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
-    create_wall([0,-5,0.5], [5,0.2,0.5], [0.8,0.8,0.8,1])
+    # ---------- OUTER WALLS ----------
+    create_wall([5, 0, 0.5], [0.2, 5, 0.5])
+    create_wall([-5, 0, 0.5], [0.2, 5, 0.5])
+    create_wall([0, 5, 0.5], [5, 0.2, 0.5])
+    create_wall([0, -5, 0.5], [5, 0.2, 0.5])
 
+    # ---------- INNER CORRIDOR WALLS ----------
+    # Create a rectangular loop corridor
+    create_wall([0, 2, 0.5], [4.0, 0.1, 0.5])   # top horizontal
+    create_wall([0, -2, 0.5], [4.0, 0.1, 0.5])  # bottom horizontal
+    create_wall([-2, 0, 0.5], [0.1, 2.0, 0.5])  # left vertical
+    create_wall([2, 0, 0.5], [0.1, 2.0, 0.5])   # right vertical
 
-    # Table near the goal (forces curved approach)
-    add_obstacle([3.0, 3.0, 0], "table/table.urdf", scale=0.3)
+    # Optional: small inner obstacles in corridor
+    create_box([1, 1], size=0.25)
+    create_box([-1, -1], size=0.25)
+    create_pillar([0, 0], radius=0.2, height=1.0)
 
-    # Pillars that block straight path
-    create_pillar([0.6, 1.2])
-    create_pillar([1.8, 1.5])
+    # ---------- GOAL ----------
+    goal_position = [0, 1]  # place goal near corridor end
+    create_goal_marker(goal_position)
 
-    # Small clutter boxes
-    create_fixed_box([1.5, 0.8])
-
-    create_fixed_box([-0.5, 1.5])
-
-
-    # ---------- Robot ----------
-    startPos = [1,2,0.001]
-    startOrientation = p.getQuaternionFromEuler([0,0,0])
+    # ---------- ROBOT ----------
+    startPos = [0, -1.6, 0.01]  # start at opposite side of corridor
+    startOrientation = p.getQuaternionFromEuler([0, 0, math.pi/2]) 
 
     robotId = p.loadURDF(
         "/home/sostika/catkin_ws/turtlebot3/turtlebot3_description/urdf/turtlebot3_burger.urdf",

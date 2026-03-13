@@ -3,7 +3,7 @@ from stable_baselines3 import PPO
 from .turtlebot_env import TurtleBotEnv
 
 env = TurtleBotEnv()
-model = PPO.load("ppo_turtlebot5", env=env)
+model = PPO.load("ppo_turtlebot6", env=env)
 
 obs, _ = env.reset()
 

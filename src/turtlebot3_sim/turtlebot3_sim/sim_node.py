@@ -1,4 +1,3 @@
-
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -10,6 +9,7 @@ import numpy as np
 from std_srvs.srv import Trigger
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
+import math
 
 WHEEL_RADIUS = 0.033   # metres
 WHEEL_BASE   = 0.160   # metres (distance between wheels)
@@ -42,7 +42,7 @@ class TurtleBotSim(Node):
         self.collision = False
 
         # ── Simulation parameters ───────────────────────────────────────
-        self.num_lidar_rays = 36
+        self.num_lidar_rays = 24
         self.lidar_range    = 5.0
 
         # Current desired robot velocity [linear_x, angular_z]
@@ -50,8 +50,8 @@ class TurtleBotSim(Node):
         self._angular = 0.0
 
         # Default start pose
-        self.start_pos = [0, 0.0, 0.05]
-        self.start_orn = p.getQuaternionFromEuler([0.0, 0.0, 0.0])
+        self.start_pos = [0, -1.6, 0.05]
+        self.start_orn = p.getQuaternionFromEuler([0, 0, math.pi/2]) 
 
         self.timer = self.create_timer(1.0 / 240.0, self.step_sim)
 
