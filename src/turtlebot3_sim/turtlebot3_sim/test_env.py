@@ -1,42 +1,46 @@
-import gymnasium as gym
 from stable_baselines3 import PPO
-from stable_baselines3.common.env_checker import check_env
-from .turtlebot_env import TurtleBotEnv
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.callbacks import CheckpointCallback
+from .myown_env import TurtleBotEnv
 
-# -------------------------------
-# 1. Create environment
-# -------------------------------
 env = TurtleBotEnv()
+env = Monitor(env)
 
-check_env(env, warn=True)
-
-# -------------------------------
-# 2. Create PPO model
-# -------------------------------
-model = PPO(
-    "MlpPolicy",
-    env,
+checkpoint_callback = CheckpointCallback(
+    save_freq=10000,
+    save_path="./checkpoints_navigation_project/",
+    name_prefix="turtlebot_nav",
     verbose=1,
-    learning_rate=1e-4,
-    n_steps=2048,
-    batch_size=64,
-    ent_coef=0.005, #change to 0.001 later
-    gamma=0.99,
-    clip_range=0.2,
-    tensorboard_log="./ppo_turtlebot_tensorboard/"
 )
 
-# -------------------------------
-# 3. Train
-# -------------------------------
-model.learn(
-    total_timesteps=700_000,
-    tb_log_name="turtlebot_run"
+model = PPO(
+    policy       = "MlpPolicy",
+    env          = env,
+    learning_rate= 3e-4,
+    n_steps      = 4096,        # steps per rollout (larger = more stable)
+    batch_size   = 256,         # minibatch size
+    n_epochs     = 10,          # gradient passes per rollout
+    gamma        = 0.99,        # discount
+    gae_lambda   = 0.95,
+    clip_range   = 0.2,
+    clip_range_vf= None,        # no VF clipping – prevents value collapse
+    ent_coef     = 0.01,        # entropy bonus – keeps policy exploring
+    vf_coef      = 0.5,
+    max_grad_norm= 0.5,
+    verbose      = 1,
+    tensorboard_log = "Autonomousnavigations",
+    policy_kwargs = dict(
+        net_arch = [dict(pi=[256, 256], vf=[256, 256])],  # separate actor/critic nets
+    ),
 )
-
-# -------------------------------
-# 4. Save model
-# -------------------------------
-model.save("ppo_turtlebot6")
-
-env.close()
+try:
+    model.learn(
+        total_timesteps=2_000_000,
+        callback=checkpoint_callback,
+    )
+except KeyboardInterrupt:
+    print("Training interrupted — saving current model...")
+finally:
+    steps = model.num_timesteps
+    model.save(f"robot_navigation_{steps}steps")
+    print(f"Model saved to sostika_{steps}steps.zip")

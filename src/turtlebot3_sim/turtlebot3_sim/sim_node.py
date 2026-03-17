@@ -10,7 +10,10 @@ from std_srvs.srv import Trigger
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Bool
 import math
-
+from geometry_msgs.msg import Pose2D
+from geometry_msgs.msg import Point
+from geometry_msgs.msg import Pose2D
+from .pybullet_world import create_goal_marker
 WHEEL_RADIUS = 0.033   # metres
 WHEEL_BASE   = 0.160   # metres (distance between wheels)
 
@@ -37,20 +40,23 @@ class TurtleBotSim(Node):
         self.sub_cmd   = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
         self.pub_scan  = self.create_publisher(LaserScan, 'scan', 10)
         self.pub_odom  = self.create_publisher(Odometry,  'odom', 10)
-        self.srv_reset = self.create_service(Trigger, 'reset_robot', self.reset_robot_callback)
+        # self.srv_reset = self.create_service(Trigger, 'reset_robot', self.reset_robot_callback)
+        self.reset_sub = self.create_subscription(Pose2D,'/reset_pose',self.reset_callback,10)
         self.pub_collision = self.create_publisher(Bool, 'collision', 10)
         self.collision = False
+        self.goal_sub = self.create_subscription(Point,'/goal_position',self.goal_callback,10)
 
         # ── Simulation parameters ───────────────────────────────────────
-        self.num_lidar_rays = 24
+        self.num_lidar_rays = 36
         self.lidar_range    = 5.0
+        self.goal_marker = None  # PyBullet ID for the visual goal marker
 
         # Current desired robot velocity [linear_x, angular_z]
         self._linear  = 0.0
         self._angular = 0.0
 
         # Default start pose
-        self.start_pos = [0, -1.6, 0.05]
+        self.start_pos =[0.0, -2.0, 0.01]
         self.start_orn = p.getQuaternionFromEuler([0, 0, math.pi/2]) 
 
         self.timer = self.create_timer(1.0 / 240.0, self.step_sim)
@@ -65,14 +71,12 @@ class TurtleBotSim(Node):
         self._linear  = msg.linear.x
         self._angular = msg.angular.z
 
-    def reset_robot_callback(self, request, response):
-        p.resetBasePositionAndOrientation(
-            self.robotId, self.start_pos, self.start_orn
-        )
+    def reset_callback(self, msg):
+        pos = [msg.x, msg.y, 0.01]  # z = 0.01 for PyBullet
+        orn = p.getQuaternionFromEuler([0, 0, msg.theta])
 
-        # FIX: Clear residual PyBullet momentum (previously missing)
-        p.resetBaseVelocity(self.robotId, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
-
+        p.resetBasePositionAndOrientation(self.robotId, pos, orn)
+        p.resetBaseVelocity(self.robotId, [0,0,0], [0,0,0])
         # Reset all joint states (wheels, caster, etc.)
         for j in range(p.getNumJoints(self.robotId)):
             p.resetJointState(self.robotId, j, targetValue=0.0, targetVelocity=0.0)
@@ -86,14 +90,34 @@ class TurtleBotSim(Node):
                 force=10.0,
             )
 
-        # Clear cached command
-        self._linear  = 0.0
-        self._angular = 0.0
+        self.get_logger().info(f"Robot reset to x:{msg.x}, y:{msg.y}, theta:{msg.theta}")
 
-        response.success = True
-        response.message = "Robot reset to start position."
-        self.get_logger().info("Robot reset.")
-        return response
+    # def reset_robot_callback(self, request, response):
+    #     p.resetBasePositionAndOrientation(self.robotId,self.start_pos,self.start_orn)
+    #     # FIX: Clear residual PyBullet momentum (previously missing)
+    #     p.resetBaseVelocity(self.robotId, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
+
+    #     # Reset all joint states (wheels, caster, etc.)
+    #     for j in range(p.getNumJoints(self.robotId)):
+    #         p.resetJointState(self.robotId, j, targetValue=0.0, targetVelocity=0.0)
+
+    #     # Stop wheel motors explicitly
+    #     for joint in (LEFT_WHEEL_JOINT, RIGHT_WHEEL_JOINT):
+    #         p.setJointMotorControl2(
+    #             self.robotId, joint,
+    #             p.VELOCITY_CONTROL,
+    #             targetVelocity=0.0,
+    #             force=10.0,
+    #         )
+
+    #     # Clear cached command
+    #     self._linear  = 0.0
+    #     self._angular = 0.0
+
+    #     response.success = True
+    #     response.message = "Robot reset to start position."
+    #     self.get_logger().info("Robot reset.")
+    #     return response
 
     def step_sim(self):
         # FIX: Proper differential-drive kinematics using robot geometry
@@ -123,8 +147,23 @@ class TurtleBotSim(Node):
         msg = Bool()
         msg.data = self.collision
         self.pub_collision.publish(msg)
+    
+    def goal_callback(self, msg):
+        if self.goal_marker is None:
+            # First tim→ create a goal is set e the marker
+            self.goal_marker = create_goal_marker([msg.x, msg.y])
+        else:
+            # Move the existing marker
+            p.resetBasePositionAndOrientation(
+                self.goal_marker,
+                [msg.x, msg.y, 0.01],
+                [0, 0, 0, 1]
+            )
 
- 
+        self.get_logger().info(f"New goal set: {msg.x}, {msg.y}")
+        
+
+
 
     def _publish_lidar_scan(self):
         scan_msg = LaserScan()
