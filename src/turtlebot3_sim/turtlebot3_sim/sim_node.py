@@ -47,7 +47,7 @@ class TurtleBotSim(Node):
         self.goal_sub = self.create_subscription(Point,'/goal_position',self.goal_callback,10)
 
         # ── Simulation parameters ───────────────────────────────────────
-        self.num_lidar_rays = 36
+        self.num_lidar_rays = 24
         self.lidar_range    = 5.0
         self.goal_marker = None  # PyBullet ID for the visual goal marker
 

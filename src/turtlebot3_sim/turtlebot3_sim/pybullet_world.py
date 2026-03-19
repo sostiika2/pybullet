@@ -97,16 +97,21 @@ def create_world():
     planeId = p.loadURDF("plane.urdf")
 
     # ---------- OUTER WALLS ----------
-    create_wall([5, 0, 0.5], [0.2, 5, 0.5])
-    create_wall([-5, 0, 0.5], [0.2, 5, 0.5])
-    create_wall([0, 5, 0.5], [5, 0.2, 0.5])
-    create_wall([0, -5, 0.5], [5, 0.2, 0.5])
+    # create_wall([5, 0, 0.5], [0.2, 5, 0.5])
+    # create_wall([-5, 0, 0.5], [0.2, 5, 0.5])
+    # create_wall([0, 5, 0.5], [5, 0.2, 0.5])
+    # create_wall([0, -5, 0.5], [5, 0.2, 0.5])
 
-      # outer walls only — simple box arena
-    create_wall([ 2.5,  0.0, 0.5], [0.1, 2.5, 0.5])  # right
-    create_wall([-2.5,  0.0, 0.5], [0.1, 2.5, 0.5])  # left
-    create_wall([ 0.0,  2.5, 0.5], [2.5, 0.1, 0.5])  # top
-    create_wall([ 0.0, -2.5, 0.5], [2.5, 0.1, 0.5])  # bottom
+    #   # outer walls only — simple box arena
+    # create_wall([ 2.5,  0.0, 0.5], [0.1, 2.5, 0.5])  # right
+    # create_wall([-2.5,  0.0, 0.5], [0.1, 2.5, 0.5])  # left
+    # create_wall([ 0.0,  2.5, 0.5], [2.5, 0.1, 0.5])  # top
+    # create_wall([ 0.0, -2.5, 0.5], [2.5, 0.1, 0.5])  # bottom
+
+    create_wall([ 2.5,  0.0, 0.5], [0.1, 3.0, 0.5])  # right
+    create_wall([-2.5,  0.0, 0.5], [0.1, 3.0, 0.5])  # left
+    create_wall([ 0.0,  2.5, 0.5], [3.0, 0.1, 0.5])  # top
+    create_wall([ 0.0, -2.5, 0.5], [3.0, 0.1, 0.5])  # bottom
 
     # small obstacles — not too big, not too small
     # pillars are best — round so robot can go around any side
@@ -114,7 +119,14 @@ def create_world():
     create_pillar([-1.0,  1.0], radius=0.15, height=1.0)
     create_pillar([ 1.0, -1.0], radius=0.15, height=1.0)
     create_pillar([-1.0, -1.0], radius=0.15, height=1.0)
-    create_pillar([ 0.0,  0.0], radius=0.15, height=1.0)  # center
+   
+
+
+    # create_pillar([ 1.0,  1.0], radius=0.14, height=0.8)
+    # create_pillar([-1.0,  1.0], radius=0.14, height=0.8)
+    # create_pillar([ 1.0, -1.0], radius=0.14, height=0.8)
+    # create_pillar([-1.0, -1.0], radius=0.14, height=0.8)
+
 
     startPos = [0.0, -2.0, 0.01]
 
@@ -146,3 +158,5 @@ if __name__ == "__main__":
     while True:
         p.stepSimulation()
         time.sleep(1./240)
+
+
