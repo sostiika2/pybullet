@@ -1,21 +1,158 @@
+# import os
+# import shutil
+# import datetime
+# from stable_baselines3 import PPO
+# from stable_baselines3.common.monitor import Monitor
+# from stable_baselines3.common.callbacks import CheckpointCallback
+# from .turtlebot_env import TurtleBotEnv 
+
+
+# def train():
+#     # --- Configuration ---
+#     MODEL_NAME = "ppo_enhanced_v1"
+#     BASE_DIR = os.path.dirname(__file__)
+    
+#     MODELS_DIR = os.path.join(BASE_DIR, "models_enhanced_v1")
+#     CHECKPOINT_DIR = os.path.join(MODELS_DIR, "checkpoints_enhanced")
+#     LOG_PATH = os.path.join(BASE_DIR, "tensorboard_logs_enhanced_v1")
+#     SAVE_PATH = os.path.join(MODELS_DIR, MODEL_NAME)
+
+#     os.makedirs(MODELS_DIR, exist_ok=True)
+#     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+#     os.makedirs(LOG_PATH, exist_ok=True)
+
+#     # --- Environment ---
+#     env = Monitor(TurtleBotEnv())
+
+#     # --- Checkpoint Callback ---
+#     checkpoint_callback = CheckpointCallback(
+#         save_freq=10000,  # 🔥 safer (less loss if crash)
+#         save_path=CHECKPOINT_DIR,
+#         name_prefix=f"{MODEL_NAME}_ckpt",
+#         verbose=1
+#     )
+
+#     # --- Model Load or Create ---
+#     if os.path.exists(SAVE_PATH + ".zip"):
+#         print(f">>> Loading existing model: {SAVE_PATH}")
+
+#         model = PPO.load(
+#             SAVE_PATH,
+#             env=env,
+#             tensorboard_log=LOG_PATH,
+#             custom_objects={"learning_rate": 1e-5}
+#         )
+
+#         reset_timesteps = False  # ✅ continue training
+#     else:
+#         print(">>> No existing model found. Training from scratch...")
+
+#         model = PPO(
+#             policy="MlpPolicy",
+#             env=env,
+#             learning_rate=3e-4,
+#             n_steps=2048,
+#             batch_size=64,
+#             n_epochs=10,
+#             gamma=0.99,
+#             gae_lambda=0.95,
+#             ent_coef=0.01,
+#             verbose=1,
+#             tensorboard_log=LOG_PATH   # ✅ ENABLE LOGGING
+#         )
+
+#         reset_timesteps = True  # ✅ new training
+
+#     # --- Training ---
+#     print(f"Starting training for {MODEL_NAME}...")
+
+#     try:
+#         model.learn(
+#             total_timesteps=750000,
+#             reset_num_timesteps=reset_timesteps,
+#             callback=checkpoint_callback,
+#             tb_log_name=MODEL_NAME   # ✅ SAME NAME → same TB graph continues
+#         )
+
+#     except KeyboardInterrupt:
+#         print("\n>>> Training interrupted. Saving...")
+
+#     except Exception as e:
+#         print(f"\n>>> ERROR: {e}")
+
+#     finally:
+#         # --- Save model ---
+#         model.save(SAVE_PATH)
+
+#         # --- Backup ---
+#         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+#         backup_path = f"{SAVE_PATH}_backup_{timestamp}.zip"
+#         shutil.copy(SAVE_PATH + ".zip", backup_path)
+
+#         print(f"Final model saved at: {SAVE_PATH}")
+#         print(f"Backup created at: {backup_path}")
+
+#         env.close()
+#         print("Done!")
+
+
+# if __name__ == "__main__":
+#     train()
+
+
+
 import os
 import shutil
 import datetime
+import random
+import math
+import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.callbacks import CheckpointCallback
-from .turtlebot_env import TurtleBotEnv 
+from stable_baselines3.common.callbacks import CheckpointCallback, BaseCallback
+from .turtlebot_env import TurtleBotEnv
 
+# ------------------------------
+# Custom Callback to log all metrics
+# ------------------------------
+import csv
 
+class FullLogCallback(BaseCallback):
+    """
+    Logs all available metrics (KL, policy loss, value loss, entropy, etc.) to a CSV file.
+    """
+    def __init__(self, log_file, verbose=1):
+        super().__init__(verbose)
+        self.log_file = log_file
+        self.header_written = False
+
+    def _on_step(self) -> bool:
+        # 'infos' is a list of dictionaries from the environment
+        infos = self.locals.get('infos', [{}])
+        if infos:
+            info = infos[-1]  # last info dict
+            if info:
+                with open(self.log_file, 'a', newline='') as f:
+                    writer = csv.DictWriter(f, fieldnames=info.keys())
+                    if not self.header_written:
+                        writer.writeheader()
+                        self.header_written = True
+                    writer.writerow(info)
+        return True
+
+# ------------------------------
+# Training Function
+# ------------------------------
 def train():
     # --- Configuration ---
-    MODEL_NAME = "ppo_enhanced"
+    MODEL_NAME = "ppo_enhanced_v2"
     BASE_DIR = os.path.dirname(__file__)
     
-    MODELS_DIR = os.path.join(BASE_DIR, "models_enhanced")
+    MODELS_DIR = os.path.join(BASE_DIR, "models_enhanced_v2")
     CHECKPOINT_DIR = os.path.join(MODELS_DIR, "checkpoints_enhanced")
-    LOG_PATH = os.path.join(BASE_DIR, "tensorboard_logs_enhanced")
+    LOG_PATH = os.path.join(BASE_DIR, "tensorboard_logs_enhanced_v2")
     SAVE_PATH = os.path.join(MODELS_DIR, MODEL_NAME)
+    CSV_LOG_FILE = os.path.join(LOG_PATH, "full_metrics.csv")
 
     os.makedirs(MODELS_DIR, exist_ok=True)
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
@@ -24,13 +161,15 @@ def train():
     # --- Environment ---
     env = Monitor(TurtleBotEnv())
 
-    # --- Checkpoint Callback ---
+    # --- Callbacks ---
     checkpoint_callback = CheckpointCallback(
-        save_freq=10000,  # 🔥 safer (less loss if crash)
+        save_freq=10000,
         save_path=CHECKPOINT_DIR,
         name_prefix=f"{MODEL_NAME}_ckpt",
         verbose=1
     )
+
+    full_log_callback = FullLogCallback(log_file=CSV_LOG_FILE)
 
     # --- Model Load or Create ---
     if os.path.exists(SAVE_PATH + ".zip"):
@@ -43,7 +182,7 @@ def train():
             custom_objects={"learning_rate": 1e-5}
         )
 
-        reset_timesteps = False  # ✅ continue training
+        reset_timesteps = False
     else:
         print(">>> No existing model found. Training from scratch...")
 
@@ -58,24 +197,24 @@ def train():
             gae_lambda=0.95,
             ent_coef=0.01,
             verbose=1,
-            tensorboard_log=LOG_PATH   # ✅ ENABLE LOGGING
+            tensorboard_log=LOG_PATH
         )
 
-        reset_timesteps = True  # ✅ new training
+        reset_timesteps = True
 
     # --- Training ---
     print(f"Starting training for {MODEL_NAME}...")
 
     try:
         model.learn(
-            total_timesteps=750000,
+            total_timesteps=750_000,
             reset_num_timesteps=reset_timesteps,
-            callback=checkpoint_callback,
-            tb_log_name=MODEL_NAME   # ✅ SAME NAME → same TB graph continues
+            callback=[checkpoint_callback, full_log_callback],
+            tb_log_name=MODEL_NAME
         )
 
     except KeyboardInterrupt:
-        print("\n>>> Training interrupted. Saving...")
+        print("\n>>> Training interrupted. Saving model...")
 
     except Exception as e:
         print(f"\n>>> ERROR: {e}")
@@ -95,6 +234,8 @@ def train():
         env.close()
         print("Done!")
 
-
+# ------------------------------
+# Main
+# ------------------------------
 if __name__ == "__main__":
     train()

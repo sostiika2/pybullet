@@ -241,14 +241,15 @@ class TurtleBotEnv(gym.Env):
 
         # --- Ensure goal and spawn distance >= 1.5 ---
         while True:
+
             goal = np.array([
-                random.uniform(-1.6, 1.6),
-                random.uniform(-1.6, 1.6)
+                random.uniform(-1.8, 1.8),
+                random.uniform(-1.8, 1.8)
             ])
 
             spawn = [
-                random.uniform(-0.3, 0.3),
-                random.uniform(-0.3, 0.3),
+                random.uniform(-1.8, 1.8),
+                random.uniform(-1.8, 1.8),
                 random.uniform(-math.pi, math.pi)
             ]
 
