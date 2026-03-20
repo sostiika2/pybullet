@@ -8,6 +8,7 @@ from sensor_msgs.msg import LaserScan
 import numpy as np
 from std_srvs.srv import Trigger
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import JointState
 from std_msgs.msg import Bool
 import math
 from geometry_msgs.msg import Pose2D
@@ -33,11 +34,11 @@ class TurtleBotSim(Node):
         super().__init__('turtlebot3_sim')
         self.get_logger().info("Starting PyBullet TurtleBot3 Simulation...")
 
-        # ── PyBullet world ──────────────────────────────────────────────
         self.physicsClient, self.robotId, self.planeId = create_world()
 
         # ── ROS2 interfaces ─────────────────────────────────────────────
         self.sub_cmd   = self.create_subscription(Twist, 'cmd_vel', self.cmd_vel_callback, 10)
+        # self.sub_wheel = self.create_subscription(JointState,"cmd_wheel", self.joint_state_callback,10)
         self.pub_scan  = self.create_publisher(LaserScan, 'scan', 10)
         self.pub_odom  = self.create_publisher(Odometry,  'odom', 10)
         # self.srv_reset = self.create_service(Trigger, 'reset_robot', self.reset_robot_callback)
@@ -47,13 +48,15 @@ class TurtleBotSim(Node):
         self.goal_sub = self.create_subscription(Point,'/goal_position',self.goal_callback,10)
 
         # ── Simulation parameters ───────────────────────────────────────
-        self.num_lidar_rays = 24
-        self.lidar_range    = 5.0
+        self.num_lidar_rays = 36
+        self.lidar_range    = 3.5
         self.goal_marker = None  # PyBullet ID for the visual goal marker
 
         # Current desired robot velocity [linear_x, angular_z]
         self._linear  = 0.0
         self._angular = 0.0
+        self.l_speed = 0.0
+        self.r_speed = 0.0
 
         # Default start pose
         self.start_pos =[0.0, -2.0, 0.01]
@@ -70,6 +73,10 @@ class TurtleBotSim(Node):
     def cmd_vel_callback(self, msg: Twist):
         self._linear  = msg.linear.x
         self._angular = msg.angular.z
+    
+    def joint_state_callback(self, msg: JointState):
+        self.l_speed = msg.velocity[0]  # left wheel velocity
+        self.r_speed = msg.velocity[1]  # right wheel velocity
 
     def reset_callback(self, msg):
         pos = [msg.x, msg.y, 0.01]  # z = 0.01 for PyBullet
@@ -126,11 +133,11 @@ class TurtleBotSim(Node):
 
         p.setJointMotorControl2(
             self.robotId, LEFT_WHEEL_JOINT,
-            p.VELOCITY_CONTROL, targetVelocity=left_vel, force=50.0
+            p.VELOCITY_CONTROL, targetVelocity=left_vel
         )
         p.setJointMotorControl2(
             self.robotId, RIGHT_WHEEL_JOINT,
-            p.VELOCITY_CONTROL, targetVelocity=right_vel, force=50.0
+            p.VELOCITY_CONTROL, targetVelocity=right_vel
         )
 
         # Publish sensors BEFORE stepping so they reflect the current state

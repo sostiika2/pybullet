@@ -91,7 +91,7 @@ def create_world():
 
     physicsClient = p.connect(p.GUI)  # Use p.GUI for visualization, p.DIRECT for headless
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
-    p.setGravity(0, 0, -10)
+    p.setGravity(0, 0, -9.8)
 
     # ---------- FLOOR ----------
     planeId = p.loadURDF("plane.urdf")
@@ -108,17 +108,17 @@ def create_world():
     # create_wall([ 0.0,  2.5, 0.5], [2.5, 0.1, 0.5])  # top
     # create_wall([ 0.0, -2.5, 0.5], [2.5, 0.1, 0.5])  # bottom
 
-    create_wall([ 2.5,  0.0, 0.5], [0.1, 3.0, 0.5])  # right
-    create_wall([-2.5,  0.0, 0.5], [0.1, 3.0, 0.5])  # left
-    create_wall([ 0.0,  2.5, 0.5], [3.0, 0.1, 0.5])  # top
-    create_wall([ 0.0, -2.5, 0.5], [3.0, 0.1, 0.5])  # bottom
+    create_wall([ 2.5,  0.0, 0.1], [0.06, 3.0, 0.5])  # right
+    create_wall([-2.5,  0.0, 0.1], [0.06, 3.0, 0.5])  # left
+    create_wall([ 0.0,  2.5, 0.1], [3.0, 0.06, 0.5])  # top
+    create_wall([ 0.0, -2.5, 0.1], [3.0, 0.06, 0.5])  # bottom
 
     # small obstacles — not too big, not too small
     # pillars are best — round so robot can go around any side
-    create_pillar([ 1.0,  1.0], radius=0.15, height=1.0)
-    create_pillar([-1.0,  1.0], radius=0.15, height=1.0)
-    create_pillar([ 1.0, -1.0], radius=0.15, height=1.0)
-    create_pillar([-1.0, -1.0], radius=0.15, height=1.0)
+    # create_pillar([ 1.0,  1.0], radius=0.15, height=1.0)
+    # create_pillar([-1.0,  1.0], radius=0.15, height=1.0)
+    # create_pillar([ 1.0, -1.0], radius=0.15, height=1.0)
+    # create_pillar([-1.0, -1.0], radius=0.15, height=1.0)
    
 
 

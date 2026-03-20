@@ -66,7 +66,7 @@ from stable_baselines3 import PPO
 from .turtlebot_env import TurtleBotEnv
 
 env = TurtleBotEnv()
-model = PPO.load("/home/sostika/my_py/src/checkpoints3/turtlebot_nav_500000_steps.zip", env=env)
+model = PPO.load("/home/sostika/my_py/src/turtlebot3_sim/turtlebot3_sim/models_enhanced/ppo_enhanced", env=env)
 
 obs, _ = env.reset()
 
