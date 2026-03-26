@@ -24,7 +24,7 @@ import pybullet as p
 import gymnasium as gym
 from gymnasium import spaces
 
-from mypy import create_world
+from pynullet_world import create_world
 from sim import (
     create_goal_marker,
     reset_robot,
@@ -282,7 +282,7 @@ class TurtleBotEnv(gym.Env):
         apply_velocity(self.physicsClient, self.robotId, 0.0, 0.0)
 
         # # Sample valid spawn + goal pair
-        spawn, self.goal = self._pick_spawn_and_goal()
+        # spawn, self.goal = self._pick_spawn_and_goal()
         # spawn,self.goal = [1.0,2.0,0.0],[2.0,-2.0]
 
         # Teleport robot and move goal marker
