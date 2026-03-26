@@ -24,7 +24,7 @@ import pybullet as p
 import gymnasium as gym
 from gymnasium import spaces
 
-from pynullet_world import create_world
+from pybullet_world import create_world
 from sim import (
     create_goal_marker,
     reset_robot,
