@@ -282,8 +282,8 @@ class TurtleBotEnv(gym.Env):
         apply_velocity(self.physicsClient, self.robotId, 0.0, 0.0)
 
         # # Sample valid spawn + goal pair
-        # spawn, self.goal = self._pick_spawn_and_goal()
-        spawn,self.goal = [1.0,2.0,0.0],[2.0,-2.0]
+        spawn, self.goal = self._pick_spawn_and_goal()
+        # spawn,self.goal = [1.0,2.0,0.0],[2.0,-2.0]
 
         # Teleport robot and move goal marker
         reset_robot(
