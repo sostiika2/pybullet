@@ -32,7 +32,7 @@ def make_env(rank: int, render: bool = False):
 
 # ── Checkpoint helpers ────────────────────────────────────────────────────────
 
-def get_latest_checkpoint(path: str = "checkpoints/"):
+def get_latest_checkpoint(path: str = "coef0/checkpoints/"):
     """
     Scan checkpoints/ for turtlebot_ppo_*_steps.zip files and
     return the path of the one with the highest step count.
@@ -49,13 +49,13 @@ def get_latest_checkpoint(path: str = "checkpoints/"):
 
 # ── Training ──────────────────────────────────────────────────────────────────
 
-def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 5_000_000):
+def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 100_000):
 
     # Create log / checkpoint directories
-    os.makedirs("logs/monitor",     exist_ok=True)
-    os.makedirs("logs/eval",        exist_ok=True)
-    os.makedirs("logs/tensorboard", exist_ok=True)
-    os.makedirs("checkpoints/best", exist_ok=True)
+    os.makedirs("coef0/logs/monitor",     exist_ok=True)
+    os.makedirs("coef0/logs/eval",        exist_ok=True)
+    os.makedirs("coef0/logs/tensorboard", exist_ok=True)
+    os.makedirs("coef0/checkpoints/best", exist_ok=True)
 
     # ── Environments ──────────────────────────────────────────────────────
     env_fns = [
@@ -63,22 +63,22 @@ def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 5_000_00
         for i in range(n_envs)
     ]
     train_env = SubprocVecEnv(env_fns)
-    train_env = VecMonitor(train_env, filename="logs/monitor/train")
+    train_env = VecMonitor(train_env, filename="coef0/logs/monitor/train")
 
     eval_env = DummyVecEnv([make_env(rank=0, render=False)])
     eval_env = VecMonitor(eval_env)
 
     # ── Callbacks ─────────────────────────────────────────────────────────
     checkpoint_cb = CheckpointCallback(
-        save_freq=10_000,              # save every 10k steps
-        save_path="checkpoints/",
+        save_freq=10_000,              # save every 5k steps
+        save_path="coef0/checkpoints/",
         name_prefix="turtlebot_ppo",
         verbose=1,
     )
     eval_cb = EvalCallback(
         eval_env,
-        best_model_save_path="checkpoints/best/",
-        log_path="logs/eval/",
+        best_model_save_path="coef0/checkpoints/best/",
+        log_path="coef0/logs/eval/",
         eval_freq=20_000,
         n_eval_episodes=5,
         deterministic=True,
@@ -115,9 +115,9 @@ def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 5_000_00
             gamma=0.99,
             gae_lambda=0.95,
             clip_range=0.2,
-            ent_coef=0.005,
+            ent_coef=0.001,
             verbose=1,
-            tensorboard_log="logs/tensorboard/",
+            tensorboard_log="coef0/logs/tensorboard/",
             device="auto",
         )
         reset_num_timesteps = True     # start from step 0
@@ -132,8 +132,8 @@ def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 5_000_00
         progress_bar=True,
     )
 
-    model.save("turtlebot_final")
-    print("\nSaved: turtlebot_final.zip")
+    model.save("coef0/turtlebot_final")
+    print("\nSaved: coef0/turtlebot_final.zip")
 
     train_env.close()
     eval_env.close()
@@ -141,7 +141,7 @@ def train(n_envs: int = 8, render_one: bool = False, total_steps: int = 5_000_00
 
 # ── Visual evaluation ─────────────────────────────────────────────────────────
 
-def evaluate(model_path: str = "checkpoints/best/best_model", n_episodes: int = 10):
+def evaluate(model_path: str = "coef0/checkpoints/best/best_model", n_episodes: int = 10):
 
     POLICY_HZ = 100
 
@@ -185,14 +185,14 @@ if __name__ == "__main__":
 
     parser.add_argument("--envs",   type=int,  default=8,
                         help="Number of parallel training envs (default: 8)")
-    parser.add_argument("--steps",  type=int,  default=5_000_000,
-                        help="Total training timesteps (default: 5_000_000)")
+    parser.add_argument("--steps",  type=int,  default=300_000,
+                        help="Total training timesteps (default: 300_000)")
     parser.add_argument("--render", action="store_true",
                         help="Open GUI for env 0 during training")
     parser.add_argument("--eval",   action="store_true",
                         help="Run visual evaluation instead of training")
-    parser.add_argument("--model",  type=str,  default="checkpoints/best/best_model",
-                        help="Model path for --eval (default: checkpoints/best/best_model)")
+    parser.add_argument("--model",  type=str,  default="coef0/checkpoints/best/best_model",
+                        help="Model path for --eval (default: coef0/checkpoints/best/best_model)")
 
     args = parser.parse_args()
 

@@ -1,18 +1,8 @@
-"""
-mypy.py  –  PyBullet world builder for TurtleBot3 navigation.
 
-Every PyBullet call passes physicsClientId so multiple parallel
-training instances never accidentally share state.
-"""
 
 import math
 import pybullet as p
 import pybullet_data
-
-
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  Primitive builders  (all require an explicit client handle)            ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
 
 def create_wall(
     client: int,
@@ -98,10 +88,6 @@ def create_pillar(
     )
 
 
-# ╔══════════════════════════════════════════════════════════════════════════╗
-# ║  World factory                                                           ║
-# ╚══════════════════════════════════════════════════════════════════════════╝
-
 URDF_PATH = (
     "/home/sostika/catkin_ws/turtlebot3/"
     "turtlebot3_description/urdf/turtlebot3_burger.urdf"
@@ -109,15 +95,6 @@ URDF_PATH = (
 
 
 def create_world(render: bool = False):
-    """
-    Spawn a complete arena and return (physicsClient, robotId, planeId).
-
-    Parameters
-    ----------
-    render : bool
-        True  → open a GUI window  (use for evaluation / manual testing)
-        False → headless DIRECT mode  (use for training)
-    """
     client = p.connect(p.GUI if render else p.DIRECT)
     p.setTimeStep(0.01, physicsClientId=client)
     p.setPhysicsEngineParameter(numSolverIterations=50, physicsClientId=client)
@@ -125,10 +102,7 @@ def create_world(render: bool = False):
     p.setAdditionalSearchPath(pybullet_data.getDataPath(), physicsClientId=client)
     p.setGravity(0, 0, -9.8, physicsClientId=client)
 
-    # ── Floor ──────────────────────────────────────────────────────────────
     plane_id = p.loadURDF("plane.urdf", physicsClientId=client)
-
-    # ── Perimeter walls ────────────────────────────────────────────────────
     create_wall(client, [ 2.5,  0.0, 0.1], [0.06, 3.0, 0.5])   # right
     create_wall(client, [-2.5,  0.0, 0.1], [0.06, 3.0, 0.5])   # left
     create_wall(client, [ 0.0,  2.5, 0.1], [3.0, 0.06, 0.5])   # top
@@ -143,15 +117,22 @@ def create_world(render: bool = False):
     create_pillar(client, [ 0.0,  0.0], radius=0.14, height=0.8)  # center
     create_pillar(client, [ 1.8, -1.0], radius=0.14, height=0.8)
     create_pillar(client, [-1.8, -1.0], radius=0.14, height=0.8)
-    create_box(client,    [ 0.0,  1.5])
-    create_box(client,    [ 0.0, -1.5])
-    create_box(client,    [-1.5,  0.5])
-    create_box(client,    [ 1.5,  0.5])
+    create_pillar(client, [0.0, 1.5], radius=0.14, height=0.8)
+    create_pillar(client, [0.0, -1.5], radius=0.14, height=0.8)
+    create_box(client,    [ 1.2,  1.0])
+    create_box(client,    [ -2.0, 0.8])
+    create_box(client,    [1.0,  0.0])
+    create_box(client,    [ 1.5, -2.0])
+    create_box(client,    [ -1.0, 1.0])
+    create_box(client,    [-1.3, -2.0])
+    create_box(client,[1.2,-1.0])
+    create_box(client,[-1.2,-1.0])
+    create_box(client, [1.0,1.0])
 
     
 
      
-    # ── Robot ──────────────────────────────────────────────────────────────
+    
     robot_id = p.loadURDF(
         URDF_PATH,
         [0.0, 0.2, 0.01],
@@ -159,7 +140,7 @@ def create_world(render: bool = False):
         physicsClientId=client,
     )
 
-    # ── Camera (GUI only) ──────────────────────────────────────────────────
+  
     if render:
         p.resetDebugVisualizerCamera(
             cameraDistance=6,
@@ -172,7 +153,7 @@ def create_world(render: bool = False):
     return client, robot_id, plane_id
 
 
-# ── Quick smoke-test ───────────────────────────────────────────────────────
+
 if __name__ == "__main__":
     import time
 
@@ -184,3 +165,5 @@ if __name__ == "__main__":
         time.sleep(1.0 / 240.0)
 
     p.disconnect(physicsClientId=client)
+
+
