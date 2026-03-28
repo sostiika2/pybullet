@@ -14,14 +14,8 @@ test/test_copyright.py
 test/test_flake8.py
 test/test_pep257.py
 turtlebot3_sim/__init__.py
-turtlebot3_sim/components.py
-turtlebot3_sim/myown_env.py
-turtlebot3_sim/onegoal.py
 turtlebot3_sim/pybullet_world.py
-turtlebot3_sim/sac.py
-turtlebot3_sim/scan.py
 turtlebot3_sim/sim_node.py
 turtlebot3_sim/test.py
 turtlebot3_sim/test_env.py
-turtlebot3_sim/train_new.py
 turtlebot3_sim/turtlebot_env.py

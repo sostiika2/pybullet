@@ -2,6 +2,37 @@ import pybullet as p
 import pybullet_data
 
 import math
+
+
+
+def is_position_free(x, y, z=0.1, robot_id=None):
+    temp_goal = p.createCollisionShape(p.GEOM_SPHERE, radius=0.1)
+    temp_id = p.createMultiBody(
+        baseCollisionShapeIndex=temp_goal,
+        basePosition=[x, y, z]
+    )
+
+    collision = False
+
+    for i in range(p.getNumBodies()):
+        obj_id = p.getBodyUniqueId(i)
+
+        if obj_id == temp_id or obj_id == robot_id:
+            continue
+
+        pts = p.getClosestPoints(
+            bodyA=temp_id,
+            bodyB=obj_id,
+            distance=0.15
+        )
+
+        if len(pts) > 0:
+            collision = True
+            break
+
+    p.removeBody(temp_id)
+
+    return not collision
 # ---------- WALL ----------
 def create_wall(pos, size, color=[0.85,0.85,0.85,1]):
     collision = p.createCollisionShape(p.GEOM_BOX, halfExtents=size)
@@ -26,15 +57,15 @@ def create_trash_bin(pos, radius=0.1, height=0.3, color=[0,0,0,1]):
     return bin_id
 
 # ---------- BOX OBSTACLE ----------
-def create_box(pos, size=0.25):
+def create_box(pos, size=0.1):
     collision = p.createCollisionShape(
         p.GEOM_BOX,
-        halfExtents=[size,size,size]
+        halfExtents=[size,size,size*2]
     )
 
     visual = p.createVisualShape(
         p.GEOM_BOX,
-        halfExtents=[size,size,size],
+        halfExtents=[size,size,size*2],
         rgbaColor=[0.6,0.4,0.2,1]
     )
 
@@ -96,6 +127,7 @@ def create_world():
     # ---------- FLOOR ----------
     planeId = p.loadURDF("plane.urdf")
 
+
     # ---------- OUTER WALLS ----------
     # create_wall([5, 0, 0.5], [0.2, 5, 0.5])
     # create_wall([-5, 0, 0.5], [0.2, 5, 0.5])
@@ -113,12 +145,36 @@ def create_world():
     create_wall([ 0.0,  2.5, 0.1], [3.0, 0.06, 0.5])  # top
     create_wall([ 0.0, -2.5, 0.1], [3.0, 0.06, 0.5])  # bottom
 
+    # create_pillar([ 0.0,  0.0], radius=0.14, height=0.8)  # center
+    # create_pillar([ 1.0,  1.0], radius=0.14, height=0.8)  # top right
+    # create_pillar([-1.0,  1.0], radius=0.14, height=0.8)  # top left
+    create_pillar( [ 0.0,  0.0], radius=0.14, height=0.8)  # center
+    create_pillar([ 1.8, -1.0], radius=0.14, height=0.8)
+    create_pillar( [-1.8, -1.0], radius=0.14, height=0.8)
+    create_pillar([0.0, 1.5], radius=0.14, height=0.8)
+    create_pillar([0.0, -1.5], radius=0.14, height=0.8)
+    create_box([ 1.2,  1.0])
+    create_box([ -2.0, 0.8])
+    create_box([1.0,  0.0])
+    create_box([ 1.5, -2.0])
+    create_box([ -1.0, 1.0])
+    create_box([-1.3, -2.0])
+
+
     # small obstacles — not too big, not too small
     # pillars are best — round so robot can go around any side
-    # create_pillar([ 1.0,  1.0], radius=0.15, height=1.0)
-    # create_pillar([-1.0,  1.0], radius=0.15, height=1.0)
-    # create_pillar([ 1.0, -1.0], radius=0.15, height=1.0)
-    # create_pillar([-1.0, -1.0], radius=0.15, height=1.0)
+    # create_pillar([ 1.0,  1.0], radius=0.15, height=0.5)
+    # create_pillar([-1.0,  1.0], radius=0.15, height=0.5)
+    # create_pillar([ 1.0, -1.0], radius=0.15, height=0.5)
+    # # create_pillar([-1.0, -1.0], radius=0.15, height=0.5)
+    create_box([1.2,-1.0])
+    create_box([-1.2,-1.0])
+    create_box([1.0,1.0])
+    # create_box([0.0,0.0])
+    
+    
+    # create_box([0.0,1.5])
+    # create_box([0.0,-1.5])
    
 
 

@@ -46,8 +46,9 @@ class TurtleBotSim(Node):
         self.pub_collision = self.create_publisher(Bool, 'collision', 10)
         self.collision = False
         self.goal_sub = self.create_subscription(Point,'/goal_position',self.goal_callback,10)
+      
 
-        # ── Simulation parameters ───────────────────────────────────────
+        # ── Simulation parameters ──────────────────────────────────────
         self.num_lidar_rays = 36
         self.lidar_range    = 3.5
         self.goal_marker = None  # PyBullet ID for the visual goal marker
@@ -73,11 +74,7 @@ class TurtleBotSim(Node):
     def cmd_vel_callback(self, msg: Twist):
         self._linear  = msg.linear.x
         self._angular = msg.angular.z
-    
-    def joint_state_callback(self, msg: JointState):
-        self.l_speed = msg.velocity[0]  # left wheel velocity
-        self.r_speed = msg.velocity[1]  # right wheel velocity
-
+ 
     def reset_callback(self, msg):
         pos = [msg.x, msg.y, 0.01]  # z = 0.01 for PyBullet
         orn = p.getQuaternionFromEuler([0, 0, msg.theta])
